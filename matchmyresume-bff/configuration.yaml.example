@@ -1,0 +1,33 @@
+# Copy to configuration.yaml and customize. Override via env vars (OBJECT_STORAGE__, JWT__, STATS__).
+application_host: "0.0.0.0"
+application_port: 8080
+
+database:
+  host: "postgres"
+  port: 5432
+  username: "matchmyresume"
+  password: "changeme"
+  database_name: "matchmyresume_bff"
+
+redis:
+  host: "redis"
+  port: 6379
+  password: null
+  database: 1
+
+auth_service:
+  base_url: "http://universal-auth-service:8000"
+  api_version: "v1"
+
+jwt:
+  secret: "your-super-secret-jwt-key-change-this-in-production"
+
+stats:
+  refresh_interval_minutes: 30
+
+object_storage:
+  endpoint: "http://minio:9000"
+  bucket: "resumes"
+  access_key_id: "rustfsadmin"
+  secret_access_key: "rustfsadmin"
+  region: "us-east-1"

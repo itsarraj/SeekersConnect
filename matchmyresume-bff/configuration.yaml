@@ -1,0 +1,32 @@
+application_host: "127.0.0.1"
+application_port: 8080
+
+database:
+  host: "127.0.0.1"
+  port: 5432
+  username: "cesium"
+  password: ""
+  database_name: "matchmyresume_bff"
+
+redis:
+  host: "127.0.0.1"
+  port: 6379
+  password: null
+  database: 1
+
+auth_service:
+  base_url: "http://localhost:8000"
+  api_version: "v1"
+
+jwt:
+  secret: "your-super-secret-jwt-key-change-this-in-production"
+
+stats:
+  refresh_interval_minutes: 30
+
+object_storage:
+  endpoint: "http://127.0.0.1:9000"
+  bucket: "resumes"
+  access_key_id: "rustfsadmin"
+  secret_access_key: "rustfsadmin"
+  region: "us-east-1"

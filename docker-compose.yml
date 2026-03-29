@@ -1,0 +1,144 @@
+# SeekersConnect stack for a VPS.
+#
+# Before first run against empty Postgres, apply SQL migrations from each Rust service
+# (from your machine or a CI job with DATABASE_URL set), e.g.:
+#   cd universal-auth-service && sqlx migrate run
+#   cd matchmyresume-bff && sqlx migrate run
+#
+# Override public URLs for browser clients (Vite / Expo web) so they hit your VPS, not localhost:
+#   PUBLIC_AUTH_URL=https://auth.example.com PUBLIC_BFF_URL=https://api.example.com docker compose build --no-cache matchmyresume-web mobile-app-web
+#
+# Copy this file’s defaults into a root `.env` and change secrets (POSTGRES_PASSWORD, JWT_SECRET,
+# RUSTFS_* object-storage keys if you change them from defaults, RESEND_API_KEY, APP__EMAIL__*, etc.).
+
+name: seekersconnect
+
+services:
+  postgres:
+    image: postgres:16-bookworm
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: seekers
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-seekers_postgres_password_change_me}
+      POSTGRES_DB: uas
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./docker/postgres/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U seekers -d uas"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  # S3 API :9000, console UI :9001 — same defaults as local dev (rustfsadmin / rustfsadmin).
+  # BFF creates the `resumes` bucket on startup via create_bucket_if_not_exists().
+  # Host bind mounts need uid/gid 10001:10001 per https://github.com/rustfs/rustfs#docker-quick-start-option-2
+  rustfs:
+    image: rustfs/rustfs:latest
+    restart: unless-stopped
+    volumes:
+      - rustfs_data:/data
+      - rustfs_logs:/logs
+    ports:
+      - "${RUSTFS_API_PORT:-9000}:9000"
+      - "${RUSTFS_CONSOLE_PORT:-9001}:9001"
+
+  universal-auth:
+    build:
+      context: ./universal-auth-service
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      APP__APPLICATION_HOST: "0.0.0.0"
+      APP__APPLICATION_PORT: "8000"
+      APP__DATABASE__HOST: postgres
+      APP__DATABASE__PORT: "5432"
+      APP__DATABASE__USERNAME: seekers
+      APP__DATABASE__PASSWORD: ${POSTGRES_PASSWORD:-seekers_postgres_password_change_me}
+      APP__DATABASE__DATABASE_NAME: uas
+      APP__REDIS__HOST: redis
+      APP__REDIS__PORT: "6379"
+      APP__JWT__SECRET: ${JWT_SECRET:-your-super-secret-jwt-key-change-this-in-production}
+      APP__EMAIL__API_KEY: ${RESEND_API_KEY:-}
+      APP__EMAIL__FROM_EMAIL: ${APP_EMAIL_FROM:-noreply@example.com}
+      APP__EMAIL__FROM_NAME: ${APP_EMAIL_FROM_NAME:-SeekersConnect}
+      APP__EMAIL__BASE_URL: ${PUBLIC_AUTH_URL:-http://localhost:8000}
+      APP__EMAIL__FRONTEND_BASE_URL: ${PUBLIC_WEB_URL:-http://localhost:80}
+    ports:
+      - "${AUTH_HOST_PORT:-8000}:8000"
+
+  matchmyresume-bff:
+    build:
+      context: ./matchmyresume-bff
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      universal-auth:
+        condition: service_started
+      rustfs:
+        condition: service_started
+    volumes:
+      - ./matchmyresume-bff/configuration.docker.yaml:/app/configuration.yaml:ro
+    environment:
+      APP__DATABASE__PASSWORD: ${POSTGRES_PASSWORD:-seekers_postgres_password_change_me}
+      APP__JWT__SECRET: ${JWT_SECRET:-your-super-secret-jwt-key-change-this-in-production}
+      OBJECT_STORAGE__ENDPOINT: http://rustfs:9000
+      OBJECT_STORAGE__BUCKET: resumes
+      OBJECT_STORAGE__ACCESS_KEY_ID: ${RUSTFS_ACCESS_KEY_ID:-rustfsadmin}
+      OBJECT_STORAGE__SECRET_ACCESS_KEY: ${RUSTFS_SECRET_ACCESS_KEY:-rustfsadmin}
+      OBJECT_STORAGE__REGION: us-east-1
+    ports:
+      - "${BFF_HOST_PORT:-8080}:8080"
+
+  matchmyresume-web:
+    build:
+      context: ./matchmyresume-web-frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_AUTH_API_URL: ${PUBLIC_AUTH_URL:-http://localhost:8000}
+        VITE_BFF_API_URL: ${PUBLIC_BFF_URL:-http://localhost:8080}
+        VITE_AUTH_API_VERSION: ${VITE_AUTH_API_VERSION:-v1}
+        VITE_BFF_API_VERSION: ${VITE_BFF_API_VERSION:-v1}
+    restart: unless-stopped
+    ports:
+      - "${WEB_HOST_PORT:-80}:80"
+
+  mobile-app-web:
+    build:
+      context: ./mobile-app
+      dockerfile: Dockerfile
+      args:
+        EXPO_PUBLIC_AUTH_API_URL: ${PUBLIC_AUTH_URL:-http://localhost:8000}
+        EXPO_PUBLIC_BFF_API_URL: ${PUBLIC_BFF_URL:-http://localhost:8080}
+        EXPO_PUBLIC_AUTH_API_VERSION: ${EXPO_PUBLIC_AUTH_API_VERSION:-v1}
+        EXPO_PUBLIC_BFF_API_VERSION: ${EXPO_PUBLIC_BFF_API_VERSION:-v1}
+    restart: unless-stopped
+    ports:
+      - "${MOBILE_WEB_HOST_PORT:-8081}:80"
+
+volumes:
+  postgres_data:
+  redis_data:
+  rustfs_data:
+  rustfs_logs:
