@@ -8,10 +8,23 @@
 #   sudo cp ~/SeekersConnect/docker/host-nginx/insiderlist.conf.example /etc/nginx/conf.d/insiderlist.conf
 #   sudo nginx -t && sudo nginx -s reload
 #
-# 1) DNS: insiderlist.seekersconnect.xyz → this server’s public IP.
-# 2) Issue cert (after DNS resolves):
+# 1) DNS (required before webroot certbot; otherwise NXDOMAIN):
+#    At your DNS host for zone seekersconnect.xyz, create a record:
+#      Name/host: insiderlist   Type: A   Value: <this VPS public IPv4>
+#    (Some panels want the full FQDN: insiderlist.seekersconnect.xyz)
+#    Verify from your laptop (not only on the server):
+#      dig +short insiderlist.seekersconnect.xyz A
+#    Wait for TTL to expire if you changed an old record.
+#
+# 2) Issue cert — HTTP-01 / webroot (only after step 1 returns an A record pointing here):
 #      sudo certbot certonly --webroot -w /var/www/certbot \
-#        -d insiderlist.seekersconnect.xyz --email YOUR_EMAIL --agree-tos --no-eff-email
+#        -d insiderlist.seekersconnect.xyz --email you@example.com --agree-tos --no-eff-email
+#
+#    If you cannot publish an A record yet but CAN add TXT records, use DNS-01 instead (no HTTP
+#    fetch to this host for that name). Certbot will print a TXT name/value to add at DNS:
+#      sudo certbot certonly --manual --preferred-challenges dns \
+#        -d insiderlist.seekersconnect.xyz --email you@example.com --agree-tos --no-eff-email
+#    After cert is issued, merge insiderlist.ssl.conf.example and reload nginx as in step 3–4.
 # 3) Append HTTPS: copy lines from insiderlist.ssl.conf.example into this file (or include it),
 #    then change the :80 location / block below to return 301 https://$host$request_uri;
 # 4) Update Insiderlist app URL / allowed hosts to match (http first, then https).
