@@ -1,8 +1,10 @@
 # SeekersConnect stack for a VPS.
 #
-# For TLS + host nginx edge routing (recommended on a public server), use:
+# For TLS with the bundled edge nginx container (dedicated VPS, ports 80/443 free), use:
 #   docker compose -f docker-compose.yml -f docker-compose.vps.yml
-# See docker/vps.env.example and the header comments in docker-compose.vps.yml.
+# If the machine already runs host nginx on 80/443, use loopback publishing instead:
+#   docker compose -f docker-compose.yml -f docker-compose.vps-host-edge.yml
+# See docker/vps.env.example, docker-compose.vps.yml, and docker/host-nginx/*.example.
 #
 # Before first run against empty Postgres, apply SQL migrations from each Rust service
 # (from your machine or a CI job with DATABASE_URL set), e.g.:

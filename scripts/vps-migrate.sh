@@ -3,7 +3,12 @@
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
-COMPOSE_FILES=( -f docker-compose.yml -f docker-compose.vps.yml )
+MODE="${1:-vps}"
+case "$MODE" in
+  host) COMPOSE_FILES=( -f docker-compose.yml -f docker-compose.vps-host-edge.yml ) ;;
+  vps)  COMPOSE_FILES=( -f docker-compose.yml -f docker-compose.vps.yml ) ;;
+  *)    echo "Usage: $0 [vps|host]  (default: vps)" >&2; exit 2 ;;
+esac
 set -a
 # shellcheck disable=SC1091
 [ -f .env ] && . ./.env
