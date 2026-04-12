@@ -1,0 +1,78 @@
+# Production-style stack: TLS edge nginx, backends not published on the host.
+#
+# Prerequisites
+# - Point DNS A records for WEB_HOST, AUTH_HOST, API_HOST at this machine (e.g. 45.154.197.90).
+# - Copy docker/vps.env.example to .env (or merge) and set secrets + PUBLIC_* URLs (must use https:// and match the three hostnames).
+#
+# First deploy (build SPA with public API URLs, then start stack)
+#   docker compose -f docker-compose.yml -f docker-compose.vps.yml build --no-cache matchmyresume-web
+#   docker compose -f docker-compose.yml -f docker-compose.vps.yml up -d
+#
+# Issue a single SAN certificate (CERT_PRIMARY_DOMAIN must match the first -d; defaults to WEB_HOST)
+#   docker compose --profile cert -f docker-compose.yml -f docker-compose.vps.yml run --rm certbot certonly --webroot -w /var/www/certbot \
+#     -d "${WEB_HOST}" -d "${AUTH_HOST}" -d "${API_HOST}" --email YOUR_EMAIL --agree-tos --no-eff-email
+#
+# Reload edge nginx to pick up TLS config
+#   docker compose -f docker-compose.yml -f docker-compose.vps.yml up -d --force-recreate reverse-proxy
+#
+# Apply DB migrations once per service (from a host with DATABASE_URL, or a one-off container):
+#   docker compose -f docker-compose.yml -f docker-compose.vps.yml run --rm --no-deps universal-auth /bin/sh -c '...'  # or sqlx on CI
+
+include:
+  - path: docker-compose.yml
+
+services:
+  universal-auth:
+    ports: !reset []
+
+  matchmyresume-bff:
+    ports: !reset []
+
+  matchmyresume-web:
+    ports: !reset []
+    build:
+      args:
+        VITE_AUTH_API_URL: ${PUBLIC_AUTH_URL}
+        VITE_BFF_API_URL: ${PUBLIC_BFF_URL}
+
+  rustfs:
+    ports: !reset []
+
+  mobile-app-web:
+    ports: !reset []
+
+  reverse-proxy:
+    build:
+      context: ./docker/reverse-proxy
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      matchmyresume-web:
+        condition: service_started
+      universal-auth:
+        condition: service_started
+      matchmyresume-bff:
+        condition: service_started
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      WEB_HOST: ${WEB_HOST:-technetium.itsarraj.xyz}
+      AUTH_HOST: ${AUTH_HOST:-auth.technetium.itsarraj.xyz}
+      API_HOST: ${API_HOST:-api.technetium.itsarraj.xyz}
+      CERT_PRIMARY_DOMAIN: ${CERT_PRIMARY_DOMAIN:-technetium.itsarraj.xyz}
+    volumes:
+      - certbot_www:/var/www/certbot
+      - certbot_conf:/etc/letsencrypt
+
+  certbot:
+    image: certbot/certbot:v2.11.0
+    profiles:
+      - cert
+    volumes:
+      - certbot_www:/var/www/certbot
+      - certbot_conf:/etc/letsencrypt
+
+volumes:
+  certbot_conf:
+  certbot_www:
