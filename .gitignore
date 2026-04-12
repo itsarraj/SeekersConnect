@@ -28,8 +28,9 @@ universal-auth-service/uas
 # Config files for local use (not .example)
 universal-auth-service/configuration.yaml
 
-# Local exports (may contain PII)
-exports/
+# Local exports (may contain PII); README in exports/ is tracked
+exports/*
+!exports/README.md
 
 # Misc
 *.bak
