@@ -1,50 +1,41 @@
-# Welcome to your Expo app 👋
+# SeekerConnect (Expo / React Native)
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+SeekerConnect is an [Expo](https://expo.dev) app using a **development build** (not Expo Go), [Expo Router](https://docs.expo.dev/router/introduction/), and **NativeWind v4**.
 
-## Get started
+## Documentation
 
-1. Install dependencies
+- **[SETUP.md](./SETUP.md)** — Full development setup: physical Android device, Metro + tunnel, **adb reverse** for local APIs, env vars, Babel/NativeWind, URL schemes, and troubleshooting.
 
-   ```bash
-   npm install
-   ```
+## Quick start
 
-2. Start the app
+```bash
+cd mobile-app
+npm install
+```
 
-   ```bash
-   npx expo start
-   ```
+**Physical Android (USB + Expo tunnel + local auth/BFF on this machine):**
 
-In the output, you'll find options to open the app in a
+```bash
+npm run dev:android-tunnel-adb
+```
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+Then press **`a`** in the terminal or open the dev client on the device. See [SETUP.md](./SETUP.md) for LAN-only mode, `.env` options, and when to run `npx expo run:android --device`.
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+**First time / after native dependency changes:** install the dev client with `npx expo run:android --device` (or `npm run android:rebuild`). If **AsyncStorage** or another native module errors with “NativeModule is null”, uninstall the app from the phone and rebuild — see [SETUP.md §9](./SETUP.md#9-troubleshooting).
 
-## Get a fresh project
+## Environment
 
-When you're ready, run:
+Copy **`env.example`** to **`.env`** and adjust `EXPO_PUBLIC_*` values. Restart Metro after changes.
+
+## Fresh Expo starter cleanup
+
+To reset the starter layout:
 
 ```bash
 npm run reset-project
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
 ## Learn more
 
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+- [Expo documentation](https://docs.expo.dev/)
+- [Development builds](https://docs.expo.dev/develop/development-builds/introduction/)

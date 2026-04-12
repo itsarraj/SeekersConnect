@@ -14,7 +14,7 @@ pub type DbPool = sqlx::PgPool;
 pub type RedisPool = ConnectionManager;
 
 pub async fn run() -> Result<(), Box<dyn std::error::Error>> {
-    println!("🔧 Starting MatchMyResume API...");
+    println!("🔧 Starting Universal Auth Service...");
 
     // Load environment variables
     dotenv().ok();
