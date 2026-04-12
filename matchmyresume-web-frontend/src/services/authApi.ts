@@ -72,17 +72,32 @@ export interface ErrorResponse {
   message?: string;
 }
 
+function resolveAuthBaseUrl(envValue: string | undefined): string {
+  if (!envValue || envValue === '__RELATIVE__') {
+    return '';
+  }
+  return envValue.replace(/\/$/, '');
+}
+
 class AuthApiService {
   private baseURL: string;
   private apiVersion: string;
 
   constructor() {
-    this.baseURL = import.meta.env.VITE_AUTH_API_URL || import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
-    this.apiVersion = import.meta.env.VITE_AUTH_API_VERSION || import.meta.env.VITE_API_VERSION || 'v1';
+    const raw = (import.meta.env.VITE_AUTH_API_URL ||
+      import.meta.env.VITE_API_BASE_URL) as string | undefined;
+    this.baseURL = resolveAuthBaseUrl(raw);
+    if (!this.baseURL && import.meta.env.DEV) {
+      this.baseURL = 'http://localhost:8000';
+    }
+    this.apiVersion =
+      import.meta.env.VITE_AUTH_API_VERSION || import.meta.env.VITE_API_VERSION || 'v1';
   }
 
   private getFullUrl(endpoint: string): string {
-    return `${this.baseURL}/api/${this.apiVersion}${endpoint}`;
+    const base = this.baseURL;
+    const path = `/api/${this.apiVersion}${endpoint}`;
+    return base ? `${base}${path}` : path;
   }
 
   private async request<T>(

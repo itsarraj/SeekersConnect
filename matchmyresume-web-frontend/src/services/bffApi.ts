@@ -118,17 +118,30 @@ export interface CreateJobRequest {
   tags?: string[];
 }
 
+function resolveApiBaseUrl(envValue: string | undefined): string {
+  if (!envValue || envValue === '__RELATIVE__') {
+    return '';
+  }
+  return envValue.replace(/\/$/, '');
+}
+
 class BffApiService {
   private baseURL: string;
   private apiVersion: string;
 
   constructor() {
-    this.baseURL = import.meta.env.VITE_BFF_API_URL || 'http://localhost:8080';
+    const raw = import.meta.env.VITE_BFF_API_URL as string | undefined;
+    this.baseURL = resolveApiBaseUrl(raw);
+    if (!this.baseURL && import.meta.env.DEV) {
+      this.baseURL = 'http://localhost:8080';
+    }
     this.apiVersion = import.meta.env.VITE_BFF_API_VERSION || 'v1';
   }
 
   private getFullUrl(endpoint: string): string {
-    return `${this.baseURL}/api/${this.apiVersion}${endpoint}`;
+    const base = this.baseURL;
+    const path = `/api/${this.apiVersion}${endpoint}`;
+    return base ? `${base}${path}` : path;
   }
 
   private async request<T>(

@@ -8,6 +8,13 @@
 
 services:
   matchmyresume-web:
+    build:
+      args:
+        # Same-origin /api/... on whichever host serves the SPA (see docker/host-nginx/seekersconnect-matchmyresume.xyz.conf.example).
+        VITE_BFF_API_URL: ${PUBLIC_BFF_URL:-__RELATIVE__}
+        VITE_AUTH_API_URL: ${PUBLIC_AUTH_URL:-__RELATIVE__}
+        VITE_BFF_API_VERSION: ${VITE_BFF_API_VERSION:-v1}
+        VITE_AUTH_API_VERSION: ${VITE_AUTH_API_VERSION:-v1}
     ports:
       - "127.0.0.1:14680:80"
   universal-auth:
