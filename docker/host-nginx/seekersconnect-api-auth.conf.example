@@ -1,0 +1,80 @@
+# API + auth on seekersconnect.xyz subdomains → Docker host-edge (BFF :14682, universal-auth :14681).
+# Use this when the SPA PUBLIC_* URLs point here instead of api.technetium.itsarraj.xyz (no DNS
+# for technetium in public DNS = net::ERR_NAME_NOT_RESOLVED no matter how nginx is tuned).
+#
+# 1) DNS: A records api.seekersconnect.xyz and auth.seekersconnect.xyz → same VPS as the site.
+# 2) TLS: expand the existing seekersconnect cert (or issue one that lists both names), e.g.:
+#      sudo certbot certonly --webroot -w /var/www/certbot --cert-name seekersconnect.xyz \
+#        --expand \
+#        -d seekersconnect.xyz -d www.seekersconnect.xyz \
+#        -d matchmyresume.xyz -d www.matchmyresume.xyz \
+#        -d api.seekersconnect.xyz -d auth.seekersconnect.xyz \
+#        --email you@example.com --agree-tos --no-eff-email
+#    If you use a separate cert line, change ssl_certificate paths below to match live/<name>/.
+#
+# 3) Install:
+#      sudo cp docker/host-nginx/seekersconnect-api-auth.conf.example /etc/nginx/conf.d/seekersconnect-api-auth.conf
+#      sudo nginx -t && sudo nginx -s reload
+#
+# 4) In ~/SeekersConnect/.env set PUBLIC_BFF_URL=https://api.seekersconnect.xyz and
+#    PUBLIC_AUTH_URL=https://auth.seekersconnect.xyz (and PUBLIC_WEB_URL for the site origin),
+#    then rebuild: docker compose … build --no-cache matchmyresume-web && … up -d matchmyresume-web
+
+server {
+    listen 80;
+    server_name api.seekersconnect.xyz auth.seekersconnect.xyz;
+
+    location /.well-known/acme-challenge/ {
+        root /var/www/certbot;
+    }
+
+    location / {
+        return 301 https://$host$request_uri;
+    }
+}
+
+server {
+    listen 443 ssl;
+    http2 on;
+    server_name auth.seekersconnect.xyz;
+    client_max_body_size 16m;
+
+    ssl_certificate     /etc/letsencrypt/live/seekersconnect.xyz/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/seekersconnect.xyz/privkey.pem;
+    include /etc/letsencrypt/options-ssl-nginx.conf;
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+
+    add_header Strict-Transport-Security "max-age=63072000" always;
+
+    location / {
+        proxy_pass http://127.0.0.1:14681;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto https;
+    }
+}
+
+server {
+    listen 443 ssl;
+    http2 on;
+    server_name api.seekersconnect.xyz;
+    client_max_body_size 64m;
+
+    ssl_certificate     /etc/letsencrypt/live/seekersconnect.xyz/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/seekersconnect.xyz/privkey.pem;
+    include /etc/letsencrypt/options-ssl-nginx.conf;
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+
+    add_header Strict-Transport-Security "max-age=63072000" always;
+
+    location / {
+        proxy_pass http://127.0.0.1:14682;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto https;
+    }
+}

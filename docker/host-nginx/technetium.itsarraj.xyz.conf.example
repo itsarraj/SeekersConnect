@@ -1,8 +1,13 @@
 # Example host nginx for technetium.itsarraj.xyz (copy to /etc/nginx/conf.d/ as root).
 # Upstream ports match docker-compose.vps-host-edge.yml (127.0.0.1:14680–14683).
 #
-# Requires public DNS A (or AAAA) for all three names below, or browsers show
-# net::ERR_NAME_NOT_RESOLVED for API/auth requests. Verify: dig +short api.technetium.itsarraj.xyz A
+# net::ERR_NAME_NOT_RESOLVED means the browser cannot resolve the hostname in DNS — nginx is
+# never contacted. Fix: create public A records for api/auth/web under itsarraj.xyz, then install
+# this file on the VPS (without it, only loopback :14682 works; nothing listens for api.technetium
+# on 443). Verify DNS: dig +short api.technetium.itsarraj.xyz A
+#
+# If you control seekersconnect.xyz but not itsarraj.xyz DNS, use seekersconnect-api-auth.conf.example
+# and point PUBLIC_* at https://api.seekersconnect.xyz / https://auth.seekersconnect.xyz instead.
 #
 # Issue cert first, e.g.:
 #   sudo mkdir -p /var/www/certbot
