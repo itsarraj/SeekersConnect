@@ -1,0 +1,52 @@
+# seekersconnect.xyz + matchmyresume.xyz → matchmyresume-web (Docker host-edge: 127.0.0.1:14680).
+#
+# Replaces an older layout that proxied these names to 127.0.0.1:8080 (e.g. insiderlist).
+# If /etc/nginx/conf.d/insiderlist.conf still declares the same server_name values, remove or
+# edit it so nginx does not load duplicate server blocks for the same hostnames.
+#
+# Install on the VPS (requires root):
+#   sudo cp docker/host-nginx/seekersconnect-matchmyresume.xyz.conf.example /etc/nginx/conf.d/seekersconnect-matchmyresume.xyz.conf
+#   sudo nginx -t && sudo nginx -s reload
+#
+# Ensure the TLS cert includes every hostname below (expand with certbot if needed):
+#   sudo certbot certonly --webroot -w /var/www/certbot \
+#     -d seekersconnect.xyz -d www.seekersconnect.xyz -d matchmyresume.xyz -d www.matchmyresume.xyz \
+#     --email YOUR_EMAIL --agree-tos --no-eff-email
+#
+# Rebuild matchmyresume-web with PUBLIC_WEB_URL (and auth/api URLs) matching how browsers reach the stack.
+
+server {
+    listen 80;
+    server_name seekersconnect.xyz www.seekersconnect.xyz matchmyresume.xyz www.matchmyresume.xyz;
+
+    location /.well-known/acme-challenge/ {
+        root /var/www/certbot;
+    }
+
+    location / {
+        return 301 https://$host$request_uri;
+    }
+}
+
+server {
+    listen 443 ssl;
+    http2 on;
+    server_name seekersconnect.xyz www.seekersconnect.xyz matchmyresume.xyz www.matchmyresume.xyz;
+    client_max_body_size 64m;
+
+    ssl_certificate     /etc/letsencrypt/live/seekersconnect.xyz/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/seekersconnect.xyz/privkey.pem;
+    include /etc/letsencrypt/options-ssl-nginx.conf;
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+
+    add_header Strict-Transport-Security "max-age=63072000" always;
+
+    location / {
+        proxy_pass http://127.0.0.1:14680;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto https;
+    }
+}
