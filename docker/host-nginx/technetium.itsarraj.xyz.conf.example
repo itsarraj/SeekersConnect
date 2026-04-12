@@ -1,5 +1,9 @@
 # Example host nginx for technetium.itsarraj.xyz (copy to /etc/nginx/conf.d/ as root).
 # Upstream ports match docker-compose.vps-host-edge.yml (127.0.0.1:14680–14683).
+#
+# Requires public DNS A (or AAAA) for all three names below, or browsers show
+# net::ERR_NAME_NOT_RESOLVED for API/auth requests. Verify: dig +short api.technetium.itsarraj.xyz A
+#
 # Issue cert first, e.g.:
 #   sudo mkdir -p /var/www/certbot
 #   sudo certbot certonly --webroot -w /var/www/certbot \
