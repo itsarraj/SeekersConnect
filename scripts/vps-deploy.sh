@@ -23,7 +23,9 @@ set +a
 
 "$ROOT/scripts/vps-migrate.sh"
 
-docker compose "${COMPOSE_FILES[@]}" build --no-cache matchmyresume-web universal-auth matchmyresume-bff reverse-proxy
+docker compose "${COMPOSE_FILES[@]}" build universal-auth
+docker compose "${COMPOSE_FILES[@]}" build matchmyresume-bff
+docker compose "${COMPOSE_FILES[@]}" build matchmyresume-web reverse-proxy
 docker compose "${COMPOSE_FILES[@]}" up -d
 
 echo "Stack is up:"

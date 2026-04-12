@@ -7,6 +7,7 @@ COPY Cargo.toml Cargo.lock ./
 COPY src ./src
 COPY migrations ./migrations
 COPY configuration.yaml ./configuration.yaml
+ENV CARGO_BUILD_JOBS=1
 RUN cargo build --release
 
 FROM debian:bookworm-slim

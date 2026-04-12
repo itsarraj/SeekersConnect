@@ -23,7 +23,10 @@ set +a
 
 "$ROOT/scripts/vps-migrate.sh" host
 
-docker compose "${COMPOSE_FILES[@]}" build --no-cache matchmyresume-web universal-auth matchmyresume-bff
+# Build one image at a time to limit peak RAM on small VPS hosts.
+docker compose "${COMPOSE_FILES[@]}" build universal-auth
+docker compose "${COMPOSE_FILES[@]}" build matchmyresume-bff
+docker compose "${COMPOSE_FILES[@]}" build matchmyresume-web
 docker compose "${COMPOSE_FILES[@]}" up -d
 
 echo "Services bound on loopback (host nginx should proxy here):"
