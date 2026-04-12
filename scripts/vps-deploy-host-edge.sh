@@ -4,7 +4,7 @@
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
-COMPOSE_FILES=( -f docker-compose.yml -f docker-compose.vps-host-edge.yml )
+COMPOSE_FILES=( -f docker-compose.yml -f docker-compose.vps-host-edge-reset.yml -f docker-compose.vps-host-edge.yml )
 
 if [ ! -f .env ]; then
   echo "Missing .env — copy docker/vps.env.example to .env and set secrets and PUBLIC_* URLs." >&2

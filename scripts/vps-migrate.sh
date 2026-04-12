@@ -5,7 +5,7 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 MODE="${1:-vps}"
 case "$MODE" in
-  host) COMPOSE_FILES=( -f docker-compose.yml -f docker-compose.vps-host-edge.yml ) ;;
+  host) COMPOSE_FILES=( -f docker-compose.yml -f docker-compose.vps-host-edge-reset.yml -f docker-compose.vps-host-edge.yml ) ;;
   vps)  COMPOSE_FILES=( -f docker-compose.yml -f docker-compose.vps.yml ) ;;
   *)    echo "Usage: $0 [vps|host]  (default: vps)" >&2; exit 2 ;;
 esac

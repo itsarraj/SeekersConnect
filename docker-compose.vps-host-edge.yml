@@ -1,25 +1,25 @@
 # Use when the VPS already runs nginx on 80/443 (other sites). Publishes SeekersConnect
 # services on loopback only — point host nginx server_name blocks at these ports.
 #
-#   docker compose -f docker-compose.yml -f docker-compose.vps-host-edge.yml up -d --build
+#   docker compose -f docker-compose.yml -f docker-compose.vps-host-edge-reset.yml -f docker-compose.vps-host-edge.yml up -d --build
 #
 # Copy docker/host-nginx/technetium.itsarraj.xyz.conf.example to the host’s nginx conf.d
 # (requires root), obtain certs for the three hostnames, then nginx -s reload.
 
 services:
   matchmyresume-web:
-    ports: !reset
+    ports:
       - "127.0.0.1:14680:80"
   universal-auth:
-    ports: !reset
+    ports:
       - "127.0.0.1:14681:8000"
   matchmyresume-bff:
-    ports: !reset
+    ports:
       - "127.0.0.1:14682:8080"
   rustfs:
-    ports: !reset
+    ports:
       - "127.0.0.1:19000:9000"
       - "127.0.0.1:19001:9001"
   mobile-app-web:
-    ports: !reset
+    ports:
       - "127.0.0.1:14683:80"

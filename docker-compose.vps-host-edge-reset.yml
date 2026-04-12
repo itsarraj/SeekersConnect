@@ -1,0 +1,16 @@
+# Clears published ports from docker-compose.yml so host-edge bindings replace them (Compose merges
+# port arrays; without this reset you get both :80 and 127.0.0.1:14680).
+# Use immediately before docker-compose.vps-host-edge.yml, e.g.:
+#   docker compose -f docker-compose.yml -f docker-compose.vps-host-edge-reset.yml -f docker-compose.vps-host-edge.yml up -d
+
+services:
+  matchmyresume-web:
+    ports: !reset []
+  universal-auth:
+    ports: !reset []
+  matchmyresume-bff:
+    ports: !reset []
+  rustfs:
+    ports: !reset []
+  mobile-app-web:
+    ports: !reset []
