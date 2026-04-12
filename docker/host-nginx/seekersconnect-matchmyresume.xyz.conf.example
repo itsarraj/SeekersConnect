@@ -1,8 +1,9 @@
 # seekersconnect.xyz + matchmyresume.xyz → matchmyresume-web (Docker host-edge: 127.0.0.1:14680).
 #
-# Replaces an older layout that proxied these names to 127.0.0.1:8080 (e.g. insiderlist).
-# If /etc/nginx/conf.d/insiderlist.conf still declares the same server_name values, remove or
-# edit it so nginx does not load duplicate server blocks for the same hostnames.
+# Deploy order (avoids "conflicting server name … ignored"):
+#   1) Replace insiderlist.conf first — use docker/host-nginx/insiderlist.conf.example so Insiderlist
+#      moves to insiderlist.seekersconnect.xyz (DNS + cert + app URL updates required).
+#   2) Then install this file as /etc/nginx/conf.d/seekersconnect-matchmyresume.xyz.conf
 #
 # Install on the VPS (requires root):
 #   sudo cp docker/host-nginx/seekersconnect-matchmyresume.xyz.conf.example /etc/nginx/conf.d/seekersconnect-matchmyresume.xyz.conf
