@@ -26,11 +26,7 @@ Thumbs.db
 universal-auth-service/uas
 
 # Config files for local use (not .example)
-universal-auth-service/configuration.yaml
-
-# Local exports (may contain PII); README in exports/ is tracked
-exports/*
-!exports/README.md
+# universal-auth-service/configuration.yaml
 
 # Misc
 *.bak
@@ -44,3 +40,90 @@ npm-debug.log
 
 # Ignore test output and coverage
 coverage/
+
+############################################################
+# mobile-app (Expo / React Native)
+############################################################
+mobile-app/node_modules/
+
+# Expo
+mobile-app/.expo/
+mobile-app/dist/
+mobile-app/web-build/
+
+# Native
+mobile-app/.kotlin/
+*.orig.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+
+# Metro
+mobile-app/.metro-health-check*
+
+# debug
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+
+# macOS
+*.pem
+
+# local env files (scoped to mobile app)
+mobile-app/.env*.local
+
+# typescript
+*.tsbuildinfo
+
+mobile-app/app-example
+
+# generated native folders
+mobile-app/ios/
+mobile-app/android/
+
+############################################################
+# universal-auth-service (Rust)
+############################################################
+universal-auth-service/server.log
+universal-auth-service/server.pid
+universal-auth-service/.env.local
+universal-auth-service/.env.*.local
+universal-auth-service/.cache/
+
+############################################################
+# matchmyresume-bff (Rust)
+############################################################
+matchmyresume-bff/server.log
+matchmyresume-bff/server.pid
+matchmyresume-bff/.env.local
+matchmyresume-bff/.env.*.local
+matchmyresume-bff/.cache/
+
+############################################################
+# matchmyresume-web-frontend (Node)
+############################################################
+matchmyresume-web-frontend/logs
+matchmyresume-web-frontend/*.log
+matchmyresume-web-frontend/npm-debug.log*
+matchmyresume-web-frontend/yarn-debug.log*
+matchmyresume-web-frontend/pnpm-debug.log*
+matchmyresume-web-frontend/lerna-debug.log*
+
+matchmyresume-web-frontend/node_modules/
+matchmyresume-web-frontend/jspm_packages/
+
+matchmyresume-web-frontend/dist/
+matchmyresume-web-frontend/dist-ssr/
+
+matchmyresume-web-frontend/.npm
+matchmyresume-web-frontend/.eslintcache
+matchmyresume-web-frontend/.node_repl_history
+matchmyresume-web-frontend/*.tgz
+matchmyresume-web-frontend/.yarn-integrity
+
+# Keep only extensions recommendations tracked for this project
+!matchmyresume-web-frontend/.vscode/
+matchmyresume-web-frontend/.vscode/*
+!matchmyresume-web-frontend/.vscode/extensions.json

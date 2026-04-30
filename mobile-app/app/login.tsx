@@ -13,8 +13,9 @@ export default function LoginScreen() {
   const onSubmit = async () => {
     setError('');
     try {
-      await login(form);
-      router.replace('/(tabs)');
+      const loggedIn = await login(form);
+      const isRecruiter = loggedIn.role === 'recruiter' || loggedIn.role === 'admin';
+      router.replace(isRecruiter ? '/(tabs)/recruiter' : '/(tabs)');
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Login failed');
     }

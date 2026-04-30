@@ -1,0 +1,28 @@
+application_host: "127.0.0.1"
+application_port: 8000
+
+database:
+  host: "127.0.0.1"
+  port: 5432
+  username: "cesium"
+  password: ""
+  database_name: "uas"
+
+redis:
+  host: "127.0.0.1"
+  port: 6379
+  password: null
+  database: null
+
+jwt:
+  secret: "your-super-secret-jwt-key-change-this-in-production"
+  access_token_expiration_hours: 24
+  refresh_token_expiration_days: 30
+
+email:
+  api_key: "re_KQyZNcM7_LgyWv4HAvNBp6E3ckUA8KfPn"
+  from_email: "noreply@resend.dev"
+  from_name: "Universal Auth Service"
+  base_url: "http://localhost:8000"
+  # Frontend URL for password reset links. Override via APP_EMAIL__FRONTEND_BASE_URL
+  frontend_base_url: "http://localhost:5173"

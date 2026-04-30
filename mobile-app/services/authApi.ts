@@ -142,7 +142,16 @@ class AuthApiService {
   }
 
   async verifyEmail(token: string): Promise<{ message: string }> {
-    return this.request<{ message: string }>(`/auth/verify-email/${token}`);
+    const url = this.getFullUrl(`/auth/verify-email/${encodeURIComponent(token)}`);
+    const response = await fetch(url, { method: 'GET' });
+    if (!response.ok) {
+      const errorData: ErrorResponse = await response.json().catch(() => ({
+        error: 'NetworkError',
+        message: `HTTP ${response.status}: ${response.statusText}`,
+      }));
+      throw new Error(errorData.message || errorData.error);
+    }
+    return response.json();
   }
 
   async requestPasswordReset(data: RequestPasswordResetRequest): Promise<{ message: string }> {

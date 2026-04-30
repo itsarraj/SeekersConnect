@@ -13,8 +13,9 @@ export default function EmployerLoginScreen() {
   const onSubmit = async () => {
     setError('');
     try {
-      await login(form);
-      router.replace('/(tabs)/recruiter');
+      const u = await login(form);
+      const isRecruiter = u.role === 'recruiter' || u.role === 'admin';
+      router.replace(isRecruiter ? '/(tabs)/recruiter' : '/(tabs)');
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Login failed');
     }

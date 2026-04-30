@@ -40,6 +40,8 @@ export default function RootLayout() {
           <Stack.Screen name="contact" options={{ title: 'Contact' }} />
           <Stack.Screen name="pricing" options={{ title: 'Pricing' }} />
           <Stack.Screen name="upgrade" options={{ title: 'Upgrade' }} />
+          <Stack.Screen name="checkout" options={{ title: 'Checkout' }} />
+          <Stack.Screen name="verify-email/[token]" options={{ title: 'Verify email' }} />
           <Stack.Screen name="employers" options={{ headerShown: false }} />
           <Stack.Screen name="unauthorized" options={{ title: 'Unauthorized' }} />
           <Stack.Screen name="+not-found" options={{ title: 'Not found' }} />

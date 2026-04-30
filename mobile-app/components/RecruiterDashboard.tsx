@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { router } from 'expo-router';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
@@ -343,6 +344,14 @@ export function RecruiterDashboard() {
   return (
     <ScrollView className="flex-1 bg-[#2b2b2b]" contentContainerStyle={{ padding: 16, paddingBottom: 40 }}>
       <Text className="text-2xl font-bold text-white">Hello {user?.name || 'there'} 👋</Text>
+      <Pressable
+        onPress={() => router.push('/pricing')}
+        className="mt-3 self-start rounded-lg border px-4 py-2"
+        style={{ borderColor: brand.accent }}>
+        <Text className="text-sm font-bold" style={{ color: brand.accent }}>
+          Recruiter pricing
+        </Text>
+      </Pressable>
 
       <View className="mt-4 flex-row flex-wrap gap-2">
         {(['create-job', 'applications', 'company'] as const).map((t) => (

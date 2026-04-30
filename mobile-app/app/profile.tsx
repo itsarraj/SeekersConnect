@@ -302,14 +302,16 @@ export default function ProfileScreen() {
         </View>
       )}
 
-      <Pressable
-        onPress={() => router.push('/upgrade')}
-        className="mt-6 items-center rounded-xl py-4"
-        style={{ backgroundColor: `${brand.accent}33` }}>
-        <Text className="font-bold" style={{ color: brand.accent }}>
-          Upgrade to Premium
-        </Text>
-      </Pressable>
+      {user.role === 'user' ? (
+        <Pressable
+          onPress={() => router.push('/upgrade')}
+          className="mt-6 items-center rounded-xl py-4"
+          style={{ backgroundColor: `${brand.accent}33` }}>
+          <Text className="font-bold" style={{ color: brand.accent }}>
+            Upgrade to Premium
+          </Text>
+        </Pressable>
+      ) : null}
 
       <Pressable onPress={() => logout()} className="mt-4 items-center py-4">
         <Text className="font-bold text-red-400">Log out</Text>

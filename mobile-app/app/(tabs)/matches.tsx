@@ -170,7 +170,7 @@ export default function AIMatchesTabScreen() {
             Upgrade to Premium to unlock all {filtered.length} matches.
           </Text>
           <Pressable
-            onPress={() => router.push('/pricing')}
+            onPress={() => router.push('/upgrade')}
             className="mt-3 items-center rounded-lg py-3"
             style={{ backgroundColor: brand.bg }}>
             <Text className="text-sm font-bold text-white">View plans</Text>
@@ -192,6 +192,24 @@ export default function AIMatchesTabScreen() {
               />
             </Pressable>
           ))}
+          {!isPremium && filtered.length > 3 ? (
+            <View className="mt-6 rounded-2xl border p-6" style={{ borderColor: `${brand.accent}55`, backgroundColor: brand.surface }}>
+              <Text className="text-center text-xl font-bold text-white">
+                Unlock {filtered.length - 3} more matches
+              </Text>
+              <Text className="mt-2 text-center text-base text-white/60">
+                Upgrade to premium to reveal every role our AI matched to your profile.
+              </Text>
+              <Pressable
+                onPress={() => router.push('/upgrade')}
+                className="mt-5 items-center rounded-xl py-4"
+                style={{ backgroundColor: brand.accent }}>
+                <Text className="font-bold" style={{ color: brand.bg }}>
+                  Upgrade to Premium
+                </Text>
+              </Pressable>
+            </View>
+          ) : null}
         </ScrollView>
       )}
     </View>

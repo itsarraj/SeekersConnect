@@ -1,5 +1,0 @@
-FROM nginx:1.27-alpine
-COPY templates/ /templates/
-COPY entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
-ENTRYPOINT ["/entrypoint.sh"]

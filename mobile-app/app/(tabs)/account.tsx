@@ -84,6 +84,7 @@ export default function AccountScreen() {
           ) : null}
 
           <View className="mt-6">
+            {link('For employers', '/employers')}
             {link('About', '/about')}
             {link('Contact', '/contact')}
           </View>

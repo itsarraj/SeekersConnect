@@ -99,6 +99,11 @@ export default function JobDetailScreen() {
             <Text className="mt-1 text-sm text-white/50">
               {formatSalary(job.salary_min, job.salary_max, job.salary_currency)}
             </Text>
+            <View className="mt-2 self-start rounded-full px-3 py-1" style={{ backgroundColor: `${brand.accent}22` }}>
+              <Text className="text-xs font-semibold" style={{ color: brand.accent }}>
+                {job.employment_type}
+              </Text>
+            </View>
           </View>
         </View>
 

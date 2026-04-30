@@ -1,12 +1,17 @@
 import { useLocalSearchParams } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Alert, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 
 import { brand } from '@/constants/brand';
 
 export default function ContactScreen() {
   const { intent } = useLocalSearchParams<{ intent?: string }>();
-  const [subject, setSubject] = useState(intent === 'upgrade' ? 'Upgrade to Premium - Candidate' : '');
+  const [subject, setSubject] = useState('');
+
+  useEffect(() => {
+    if (intent === 'upgrade') setSubject('Upgrade to Premium - Candidate');
+    else if (intent === 'recruiter-plan') setSubject('Employer subscription / pricing');
+  }, [intent]);
 
   const send = () => {
     Alert.alert('Message', 'This demo form does not send mail. Reach support@matchmyresume.com.');
