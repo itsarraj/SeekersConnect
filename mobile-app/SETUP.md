@@ -171,6 +171,7 @@ For **`http://`** to LAN IPs or localhost-via-adb, **`android:usesCleartextTraff
 | `EXPO_PUBLIC_BFF_API_URL` | BFF base URL (default `http://localhost:8080`). |
 | `EXPO_PUBLIC_DEV_TRANSPORT=adb` | Keep `localhost` in URLs; use with **adb reverse** for device → PC. |
 | `EXPO_PUBLIC_DEV_API_HOST` | Force rewrite of `localhost` / `127.0.0.1` to this host (e.g. `192.168.1.50`). |
+| `EXPO_PUBLIC_ANDROID_EMULATOR_HOST` | Android emulator host for the dev machine (defaults to `10.0.2.2`). |
 | `EXPO_PUBLIC_AUTH_API_VERSION` / `EXPO_PUBLIC_BFF_API_VERSION` | API path versions (defaults `v1`). |
 
 Copy **`env.example`** to **`.env`** and edit. Restart Metro after changes.

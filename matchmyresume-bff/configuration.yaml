@@ -4,7 +4,7 @@ application_port: 8080
 database:
   host: "127.0.0.1"
   port: 5432
-  username: "cesium"
+  username: "uranium"
   password: ""
   database_name: "matchmyresume_bff"
 
@@ -23,6 +23,11 @@ jwt:
 
 stats:
   refresh_interval_minutes: 30
+
+# Optional: Hugging Face matcher HTTP service (see ai-tests/matcher_service.py).
+matcher:
+  base_url: null
+  internal_secret: null
 
 object_storage:
   endpoint: "http://127.0.0.1:9000"

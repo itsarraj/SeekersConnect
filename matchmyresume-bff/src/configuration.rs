@@ -6,9 +6,17 @@ pub struct Settings {
     pub jwt: JwtSettings,
     #[serde(default)]
     pub stats: StatsSettings,
+    #[serde(default)]
+    pub matcher: MatcherSettings,
     pub object_storage: ObjectStorageSettings,
     pub application_host: String,
     pub application_port: u16,
+}
+
+#[derive(serde::Deserialize, Clone, Default)]
+pub struct MatcherSettings {
+    pub base_url: Option<String>,
+    pub internal_secret: Option<String>,
 }
 
 #[derive(serde::Deserialize, Clone)]

@@ -18,6 +18,12 @@ Thumbs.db
 # Docker output
 *.pid
 
+# nginx one-off copies
+*.conf.ready
+*.conf.new
+*.conf.NEW
+*.conf.tmp
+
 # Environment files
 .env
 .env.*
@@ -40,6 +46,19 @@ npm-debug.log
 
 # Ignore test output and coverage
 coverage/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+.Python
+ai-tests/**/__pycache__/
+
+# Redis / accidental dumps in repo tree
+*.rdb
+dump.rdb
+matchmyresume-bff/migrations/*.rdb
 
 ############################################################
 # mobile-app (Expo / React Native)

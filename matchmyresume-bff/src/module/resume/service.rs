@@ -27,22 +27,7 @@ impl JobService {
     }
 
     pub async fn get_suggested_jobs(&self, user_id: Uuid) -> Result<Vec<Job>, Box<dyn std::error::Error>> {
-        let mut jobs = self.repository.find_suggested_for_user(user_id).await?;
-        
-        // If no suggestions found in DB, return some mock matches for demonstration
-        if jobs.is_empty() {
-            // Fetch some real jobs from the DB to use as mock suggestions
-            let (all_jobs, _) = self.repository.find_all(JobFilter {
-                page: Some(1),
-                limit: Some(6),
-                ..Default::default()
-            }).await?;
-            jobs = all_jobs;
-            
-            // If the DB is completely empty, we can't even return mock jobs from it
-            // But since we have a seed migration, there should be at least 6 jobs.
-        }
-        
+        let jobs = self.repository.find_suggested_for_user(user_id).await?;
         Ok(jobs)
     }
 

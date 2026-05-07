@@ -4,6 +4,7 @@ use dotenvy::dotenv;
 use redis::aio::ConnectionManager;
 
 pub mod configuration;
+pub mod matcher_client;
 pub mod middleware;
 pub mod module;
 pub mod routes;

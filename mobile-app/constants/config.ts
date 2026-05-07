@@ -1,4 +1,5 @@
 import Constants from 'expo-constants';
+import { Platform } from 'react-native';
 
 /**
  * Dev API URLs — override with EXPO_PUBLIC_* in .env (loaded at bundle time).
@@ -26,6 +27,12 @@ function isPrivateLanIPv4(host: string): boolean {
 function devMachineHostForApi(): string | null {
   if (!__DEV__) return null;
   if (process.env.EXPO_PUBLIC_DEV_TRANSPORT === 'adb') return null;
+
+  // Android emulator: "localhost" inside the emulator is the emulator itself.
+  // 10.0.2.2 is the host machine from the Android Studio emulator.
+  if (Platform.OS === 'android' && Constants.isDevice === false) {
+    return process.env.EXPO_PUBLIC_ANDROID_EMULATOR_HOST?.trim() || '10.0.2.2';
+  }
 
   const explicit = process.env.EXPO_PUBLIC_DEV_API_HOST?.trim();
   if (explicit) return explicit;

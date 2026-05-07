@@ -14,8 +14,15 @@ pub fn config(cfg: &mut web::ServiceConfig) {
                 web::scope("/jobs")
                     .configure(|job_cfg| {
                         job_cfg.route("", web::get().to(resume_handler::list_jobs));
+                        job_cfg.route(
+                            "/suggested/{user_id}/refresh",
+                            web::post().to(resume_handler::post_refresh_suggested_jobs),
+                        );
+                        job_cfg.route(
+                            "/suggested/{user_id}",
+                            web::get().to(resume_handler::get_suggested_jobs),
+                        );
                         job_cfg.route("/{id}", web::get().to(resume_handler::get_job));
-                        job_cfg.route("/suggested/{user_id}", web::get().to(resume_handler::get_suggested_jobs));
                     })
             )
             .service(

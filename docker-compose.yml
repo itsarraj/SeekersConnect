@@ -15,7 +15,7 @@
 #   PUBLIC_AUTH_URL=https://auth.example.com PUBLIC_BFF_URL=https://api.example.com docker compose build --no-cache matchmyresume-web mobile-app-web
 #
 # Copy this file’s defaults into a root `.env` and change secrets (POSTGRES_PASSWORD, JWT_SECRET,
-# RUSTFS_* object-storage keys if you change them from defaults, RESEND_API_KEY, APP__EMAIL__*, etc.).
+# RUSTFS_* object-storage keys if you change them from defaults, RESEND_API_KEY, APP_EMAIL__*, etc.).
 
 name: seekersconnect
 
@@ -72,21 +72,21 @@ services:
       redis:
         condition: service_healthy
     environment:
-      APP__APPLICATION_HOST: "0.0.0.0"
-      APP__APPLICATION_PORT: "8000"
-      APP__DATABASE__HOST: postgres
-      APP__DATABASE__PORT: "5432"
-      APP__DATABASE__USERNAME: seekers
-      APP__DATABASE__PASSWORD: ${POSTGRES_PASSWORD:-seekers_postgres_password_change_me}
-      APP__DATABASE__DATABASE_NAME: uas
-      APP__REDIS__HOST: redis
-      APP__REDIS__PORT: "6379"
-      APP__JWT__SECRET: ${JWT_SECRET:-your-super-secret-jwt-key-change-this-in-production}
-      APP__EMAIL__API_KEY: ${RESEND_API_KEY:-}
-      APP__EMAIL__FROM_EMAIL: ${APP_EMAIL_FROM:-noreply@example.com}
-      APP__EMAIL__FROM_NAME: ${APP_EMAIL_FROM_NAME:-SeekersConnect}
-      APP__EMAIL__BASE_URL: ${PUBLIC_AUTH_URL:-http://localhost:8000}
-      APP__EMAIL__FRONTEND_BASE_URL: ${PUBLIC_WEB_URL:-http://localhost:80}
+      APP_APPLICATION_HOST: "0.0.0.0"
+      APP_APPLICATION_PORT: "8000"
+      APP_DATABASE__HOST: postgres
+      APP_DATABASE__PORT: "5432"
+      APP_DATABASE__USERNAME: seekers
+      APP_DATABASE__PASSWORD: ${POSTGRES_PASSWORD:-seekers_postgres_password_change_me}
+      APP_DATABASE__DATABASE_NAME: uas
+      APP_REDIS__HOST: redis
+      APP_REDIS__PORT: "6379"
+      APP_JWT__SECRET: ${JWT_SECRET:-your-super-secret-jwt-key-change-this-in-production}
+      APP_EMAIL__API_KEY: ${RESEND_API_KEY:-}
+      APP_EMAIL__FROM_EMAIL: ${APP_EMAIL_FROM:-noreply@example.com}
+      APP_EMAIL__FROM_NAME: ${APP_EMAIL_FROM_NAME:-SeekersConnect}
+      APP_EMAIL__BASE_URL: ${PUBLIC_AUTH_URL:-http://localhost:8000}
+      APP_EMAIL__FRONTEND_BASE_URL: ${PUBLIC_WEB_URL:-http://localhost:80}
     ports:
       - "${AUTH_HOST_PORT:-8000}:8000"
 
@@ -107,6 +107,9 @@ services:
     volumes:
       - ./matchmyresume-bff/configuration.docker.yaml:/app/configuration.yaml:ro
     environment:
+      # Optional Hugging Face matcher (start with: docker compose --profile ml up -d resume-matcher)
+      APP__MATCHER__BASE_URL: ${APP_MATCHER_BASE_URL:-http://resume-matcher:8095}
+      APP__MATCHER__INTERNAL_SECRET: ${MATCHER_INTERNAL_SECRET:-}
       APP__DATABASE__PASSWORD: ${POSTGRES_PASSWORD:-seekers_postgres_password_change_me}
       APP__JWT__SECRET: ${JWT_SECRET:-your-super-secret-jwt-key-change-this-in-production}
       OBJECT_STORAGE__ENDPOINT: http://rustfs:9000
@@ -116,6 +119,26 @@ services:
       OBJECT_STORAGE__REGION: us-east-1
     ports:
       - "${BFF_HOST_PORT:-8080}:8080"
+
+  # HF embeddings worker (CPU image is large). Enable: docker compose --profile ml up -d resume-matcher
+  # Set APP_MATCHER_BASE_URL=http://resume-matcher:8095 and MATCHER_INTERNAL_SECRET in .env (same value on both services).
+  resume-matcher:
+    profiles:
+      - ml
+    build:
+      context: ./ai-tests
+      dockerfile: Dockerfile.matcher
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgres://seekers:${POSTGRES_PASSWORD:-seekers_postgres_password_change_me}@postgres:5432/matchmyresume_bff
+      MATCHER_INTERNAL_SECRET: ${MATCHER_INTERNAL_SECRET:-}
+      MATCHER_TOP_K: ${MATCHER_TOP_K:-25}
+      MATCHER_MODEL_ID: ${MATCHER_MODEL_ID:-sentence-transformers/all-MiniLM-L6-v2}
+    ports:
+      - "${MATCHER_HOST_PORT:-8095}:8095"
 
   matchmyresume-web:
     build:

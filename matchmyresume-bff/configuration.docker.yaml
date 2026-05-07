@@ -29,6 +29,10 @@ jwt:
 stats:
   refresh_interval_minutes: 30
 
+matcher:
+  base_url: null
+  internal_secret: null
+
 object_storage:
   endpoint: "http://rustfs:9000"
   bucket: "resumes"

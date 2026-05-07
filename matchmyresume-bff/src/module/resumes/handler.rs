@@ -1,6 +1,7 @@
 use actix_multipart::form::{tempfile::TempFile, MultipartForm};
 use actix_web::{web, HttpRequest, HttpResponse, Responder};
 use crate::configuration::Settings;
+use crate::matcher_client;
 use crate::middleware::auth;
 use crate::module::resumes::model::{CreateResumeRequest, UpdateResumeRequest};
 use crate::module::resumes::service::ResumeService;
@@ -73,7 +74,10 @@ pub async fn create_resume(
     }
     let user_id = auth.user_id;
     match service.create_resume(user_id, data.into_inner()).await {
-        Ok(resume) => HttpResponse::Created().json(resume),
+        Ok(resume) => {
+            matcher_client::spawn_refresh_suggestions(&config.matcher, resume.user_id);
+            HttpResponse::Created().json(resume)
+        }
         Err(e) => {
             log::error!("Failed to create resume: {}", e);
             HttpResponse::InternalServerError().finish()
@@ -98,7 +102,10 @@ pub async fn update_resume(
     let user_id = auth.user_id;
     let id = path.into_inner();
     match service.update_resume(id, user_id, data.into_inner()).await {
-        Ok(Some(resume)) => HttpResponse::Ok().json(resume),
+        Ok(Some(resume)) => {
+            matcher_client::spawn_refresh_suggestions(&config.matcher, resume.user_id);
+            HttpResponse::Ok().json(resume)
+        }
         Ok(None) => HttpResponse::NotFound().finish(),
         Err(e) => {
             log::error!("Failed to update resume: {}", e);
@@ -182,7 +189,10 @@ pub async fn create_resume_upload(
         )
         .await
     {
-        Ok(resume) => HttpResponse::Created().json(resume),
+        Ok(resume) => {
+            matcher_client::spawn_refresh_suggestions(&config.matcher, resume.user_id);
+            HttpResponse::Created().json(resume)
+        }
         Err(e) => {
             log::error!("Failed to create resume: {}", e);
             HttpResponse::InternalServerError().json(serde_json::json!({
