@@ -89,6 +89,11 @@ services:
       APP_EMAIL__FRONTEND_BASE_URL: ${PUBLIC_WEB_URL:-http://localhost:80}
     ports:
       - "${AUTH_HOST_PORT:-8000}:8000"
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   matchmyresume-bff:
     build:
@@ -110,7 +115,14 @@ services:
       # Optional Hugging Face matcher (start with: docker compose --profile ml up -d resume-matcher)
       APP__MATCHER__BASE_URL: ${APP_MATCHER_BASE_URL:-http://resume-matcher:8095}
       APP__MATCHER__INTERNAL_SECRET: ${MATCHER_INTERNAL_SECRET:-}
+      APP__DATABASE__HOST: postgres
+      APP__DATABASE__PORT: "5432"
+      APP__DATABASE__USERNAME: seekers
       APP__DATABASE__PASSWORD: ${POSTGRES_PASSWORD:-seekers_postgres_password_change_me}
+      APP__DATABASE__DATABASE_NAME: matchmyresume_bff
+      APP__REDIS__HOST: redis
+      APP__REDIS__PORT: "6379"
+      APP__AUTH_SERVICE__BASE_URL: http://universal-auth:8000
       APP__JWT__SECRET: ${JWT_SECRET:-your-super-secret-jwt-key-change-this-in-production}
       OBJECT_STORAGE__ENDPOINT: http://rustfs:9000
       OBJECT_STORAGE__BUCKET: resumes
@@ -119,6 +131,11 @@ services:
       OBJECT_STORAGE__REGION: us-east-1
     ports:
       - "${BFF_HOST_PORT:-8080}:8080"
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8080/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   # HF embeddings worker (CPU image is large). Enable: docker compose --profile ml up -d resume-matcher
   # Set APP_MATCHER_BASE_URL=http://resume-matcher:8095 and MATCHER_INTERNAL_SECRET in .env (same value on both services).
