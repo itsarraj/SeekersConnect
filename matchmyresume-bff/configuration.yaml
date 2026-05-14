@@ -14,12 +14,14 @@ redis:
   password: null
   database: 1
 
+jwt:
+  secret: "your-super-secret-jwt-key-change-this-in-production"
+  access_token_expiration_hours: 24
+  refresh_token_expiration_days: 30
+
 auth_service:
   base_url: "http://localhost:8000"
   api_version: "v1"
-
-jwt:
-  secret: "your-super-secret-jwt-key-change-this-in-production"
 
 stats:
   refresh_interval_minutes: 30

@@ -20,9 +20,8 @@ jwt:
   refresh_token_expiration_days: 30
 
 email:
-  api_key: "re_KQyZNcM7_LgyWv4HAvNBp6E3ckUA8KfPn"
+  api_key: "re_2Caioev1_L22gbJL1vyyd7krrXmTH8tnD"
   from_email: "noreply@resend.dev"
   from_name: "Universal Auth Service"
   base_url: "http://localhost:8000"
-  # Frontend URL for password reset links. Override via APP_EMAIL__FRONTEND_BASE_URL
   frontend_base_url: "http://localhost:5173"

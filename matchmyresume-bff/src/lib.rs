@@ -1,7 +1,5 @@
 use actix_multipart::form::{tempfile::TempFileConfig, MultipartFormConfig};
 use actix_web::{App, HttpServer, web};
-use dotenvy::dotenv;
-use redis::aio::ConnectionManager;
 
 pub mod configuration;
 pub mod matcher_client;
@@ -10,26 +8,47 @@ pub mod module;
 pub mod routes;
 pub mod storage;
 
+use dotenvy::dotenv;
+use std::env;
+use std::error::Error;
+
+use redis::aio::ConnectionManager;
 pub type DbPool = sqlx::PgPool;
 pub type RedisPool = ConnectionManager;
 
 pub async fn run() -> Result<(), Box<dyn std::error::Error>> {
-    dotenv().ok();
-    env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
-
-    let configuration = configuration::get_configuration().expect("Failed to load configuration");
+    println!("🔧 Starting MatchMyResume BFF...");
     
-    // Database connection
+    // Locad environment variables from .env file    
+    dotenv().ok();
+    println!("🔧 Environment variables loaded from .env file");
+    
+    // Load application configuration
+    let configuration = configuration::get_configuration().expect("Failed to load configuration");
     let database_url = configuration.database.connection_string();
+    let redis_url = configuration.redis.connection_string();
+
+    println!("📊 Database URL: {}", database_url);
+    println!("🔴 Redis URL: {}", redis_url); 
+
+    // Establish database connection
     let pool = sqlx::postgres::PgPoolOptions::new()
-        .max_connections(50)
+        .max_connections(100)
+        .min_connections(5)
         .connect(&database_url).await?;
 
-    // Redis connection
-    let redis_url = configuration.redis.connection_string();
+    println!("✅ Database connection established successfully!");
+    println!("🔗 Connection Pool Info: {:#?}", pool);
+
+    // Establish Redis connection
     let redis_client = redis::Client::open(redis_url)?;
     let redis_pool = ConnectionManager::new(redis_client).await?;
 
+    println!("✅ Redis connection established successfully!");
+    
+    env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
+
+    // Configure and start HTTP server
     log::info!("Starting BFF server on {}:{}", configuration.application_host, configuration.application_port);
 
     let server_host = configuration.application_host.clone();
@@ -92,7 +111,7 @@ pub async fn run() -> Result<(), Box<dyn std::error::Error>> {
     }
 
     let temp_dir = std::env::temp_dir();
-    HttpServer::new(move || {
+    let _server = HttpServer::new(move || {
         App::new()
             .wrap(middleware::cors::configure_cors())
             .app_data(TempFileConfig::default().directory(temp_dir.clone()))

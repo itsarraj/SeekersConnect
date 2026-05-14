@@ -45,9 +45,11 @@ pub struct EmailSettings {
 }
 
 pub fn get_configuration() -> Result<Settings, config::ConfigError> {
+    let base = config::File::new("configuration.yaml", config::FileFormat::Yaml);
+    let env = config::Environment::default().prefix("UAS").separator("__").ignore_empty(true);
     let settings = config::Config::builder()
-        .add_source(config::File::new("configuration.yaml", config::FileFormat::Yaml))
-        .add_source(config::Environment::default().prefix("APP").separator("__"))
+        .add_source(base)
+        .add_source(env)
         .build()?;
     // Try to convert the configuration values it read into
     // our Settings type

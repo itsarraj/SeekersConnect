@@ -1,0 +1,290 @@
+{
+  "info": {
+    "_postman_id": "123e4567-e89b-12d3-a456-426614174000",
+    "name": "MatchMyResume BFF API",
+    "description": "Comprehensive API collection for MatchMyResume BFF service built with Rust and Actix Web",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://127.0.0.1:8080",
+      "type": "string"
+    },
+    {
+      "key": "access_token",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Applications",
+      "item": [
+        {
+          "name": "GET /api/v1/applications",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/applications",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "applications"]
+            },
+            "description": "Retrieve all applications. Requires authentication."
+          },
+          "response": []
+        },
+        {
+          "name": "POST /api/v1/applications",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"job_id\": 123,\n  \"candidate_id\": 456,\n  \"status\": \"applied\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/applications",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "applications"]
+            },
+            "description": "Create a new application. Requires authentication."
+          },
+          "response": []
+        },
+        {
+          "name": "PUT /api/v1/applications/{id}",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"interview_scheduled\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/applications/{id}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "applications", "{id}"]
+            },
+            "description": "Update an application by ID. Requires authentication."
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE /api/v1/applications/{id}",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/applications/{id}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "applications", "{id}"]
+            },
+            "description": "Delete an application by ID. Requires authentication."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Profiles",
+      "item": [
+        {
+          "name": "GET /api/v1/profiles",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/profiles",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "profiles"]
+            },
+            "description": "Retrieve all profiles. Requires authentication."
+          },
+          "response": []
+        },
+        {
+          "name": "POST /api/v1/profiles",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john.doe@example.com\",\n  \"bio\": \"Experienced software engineer.\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/profiles",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "profiles"]
+            },
+            "description": "Create a new profile. Requires authentication."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Recruiter",
+      "item": [
+        {
+          "name": "GET /api/v1/recruiter",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/recruiter",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "recruiter"]
+            },
+            "description": "Retrieve recruiter data."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Resume",
+      "item": [
+        {
+          "name": "GET /api/v1/resume",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/resume",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "resume"]
+            },
+            "description": "Retrieve resume data."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Resumes",
+      "item": [
+        {
+          "name": "GET /api/v1/resumes",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/resumes",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "resumes"]
+            },
+            "description": "Retrieve all resumes."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Stats",
+      "item": [
+        {
+          "name": "GET /api/v1/stats",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/stats",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "stats"]
+            },
+            "description": "Retrieve statistics."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Storage",
+      "item": [
+        {
+          "name": "GET /api/v1/storage",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/storage",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "storage"]
+            },
+            "description": "Retrieve storage data."
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

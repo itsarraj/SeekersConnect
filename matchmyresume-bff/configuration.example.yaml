@@ -5,8 +5,8 @@ application_port: 8080
 database:
   host: "postgres"
   port: 5432
-  username: "matchmyresume"
-  password: "changeme"
+  username: "seekers"
+  password: "seekers_postgres_password_change_me"
   database_name: "matchmyresume_bff"
 
 redis:
@@ -15,18 +15,25 @@ redis:
   password: null
   database: 1
 
-auth_service:
-  base_url: "http://universal-auth-service:8000"
-  api_version: "v1"
-
 jwt:
   secret: "your-super-secret-jwt-key-change-this-in-production"
+  access_token_expiration_hours: 24
+  refresh_token_expiration_days: 30
+
+auth_service:
+  base_url: "http://universal-auth:8000"
+  api_version: "v1"
+
 
 stats:
   refresh_interval_minutes: 30
 
+matcher:
+  base_url: null
+  internal_secret: null
+
 object_storage:
-  endpoint: "http://minio:9000"
+  endpoint: "http://rustfs:9000"
   bucket: "resumes"
   access_key_id: "rustfsadmin"
   secret_access_key: "rustfsadmin"

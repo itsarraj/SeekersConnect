@@ -76,29 +76,13 @@ pub struct AuthServiceSettings {
 
 pub fn get_configuration() -> Result<Settings, config::ConfigError> {
     let base = config::File::new("configuration.yaml", config::FileFormat::Yaml);
+    let env = config::Environment::default().prefix("BFF").separator("__");
     let settings = config::Config::builder()
         .add_source(base)
-        .add_source(
-            config::Environment::with_prefix("OBJECT_STORAGE")
-                .separator("__")
-                .try_parsing(true),
-        )
-        .add_source(
-            config::Environment::with_prefix("JWT")
-                .separator("__")
-                .try_parsing(true),
-        )
-        .add_source(
-            config::Environment::with_prefix("STATS")
-                .separator("__")
-                .try_parsing(true),
-        )
-        .add_source(
-            config::Environment::with_prefix("APP")
-                .separator("__")
-                .try_parsing(true),
-        )
+        .add_source(env)
         .build()?;
+    // Try to convert the configuration values it read into
+    // our Settings type
     settings.try_deserialize::<Settings>()
 }
 
@@ -114,12 +98,15 @@ impl DatabaseSettings {
 impl RedisSettings {
     pub fn connection_string(&self) -> String {
         let mut conn_str = format!("redis://{}:{}", self.host, self.port);
+
         if let Some(password) = &self.password {
             conn_str = format!("redis://:{}@{}:{}", password, self.host, self.port);
         }
+
         if let Some(database) = self.database {
             conn_str = format!("{}/{}", conn_str, database);
         }
+
         conn_str
     }
 }

@@ -1,22 +1,22 @@
 use actix_web::{App, HttpServer, web};
 
 pub mod routes;
-// pub mod db;
 pub mod configuration;
 pub mod module;
 pub mod middleware;
-// pub mod health;
-// pub mod utils;
 
 use dotenvy::dotenv;
+use std::env;
+use std::error::Error;
+
 use redis::aio::ConnectionManager;
 pub type DbPool = sqlx::PgPool;
 pub type RedisPool = ConnectionManager;
 
 pub async fn run() -> Result<(), Box<dyn std::error::Error>> {
     println!("🔧 Starting Universal Auth Service...");
-
-    // Load environment variables
+    
+    // Locad environment variables from .env file    
     dotenv().ok();
     println!("🔧 Environment variables loaded from .env file");
 
@@ -43,8 +43,11 @@ pub async fn run() -> Result<(), Box<dyn std::error::Error>> {
 
     println!("✅ Redis connection established successfully!");
 
+    env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
+
     // Configure and start HTTP server
-    println!("🔧 Starting API server on port {}", configuration.application_port);
+    println!("🔧 Starting API server on {}:{}", configuration.application_host, configuration.application_port);
+
     let jwt_config = configuration.jwt.clone();
 
     let _server = HttpServer::new(move || {

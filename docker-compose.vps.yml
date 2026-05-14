@@ -38,9 +38,6 @@ services:
   rustfs:
     ports: !reset []
 
-  mobile-app-web:
-    ports: !reset []
-
   reverse-proxy:
     build:
       context: ./docker/reverse-proxy
