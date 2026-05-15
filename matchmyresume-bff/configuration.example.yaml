@@ -1,16 +1,15 @@
-# Copy to configuration.yaml and customize. Override via env vars (OBJECT_STORAGE__, JWT__, STATS__).
-application_host: "0.0.0.0"
+application_host: "127.0.0.1"
 application_port: 8080
 
 database:
-  host: "postgres"
+  host: "127.0.0.1"
   port: 5432
-  username: "seekers"
-  password: "seekers_postgres_password_change_me"
+  username: "uranium"
+  password: ""
   database_name: "matchmyresume_bff"
 
 redis:
-  host: "redis"
+  host: "127.0.0.1"
   port: 6379
   password: null
   database: 1
@@ -21,20 +20,21 @@ jwt:
   refresh_token_expiration_days: 30
 
 auth_service:
-  base_url: "http://universal-auth:8000"
+  base_url: "http://localhost:8000"
   api_version: "v1"
-
 
 stats:
   refresh_interval_minutes: 30
 
+# Optional: Hugging Face matcher HTTP service (see ai-tests/matcher_service.py).
 matcher:
   base_url: null
   internal_secret: null
 
 object_storage:
-  endpoint: "http://rustfs:9000"
+  endpoint: "http://127.0.0.1:9000"
   bucket: "resumes"
   access_key_id: "rustfsadmin"
   secret_access_key: "rustfsadmin"
   region: "us-east-1"
+

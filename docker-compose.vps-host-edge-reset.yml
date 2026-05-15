@@ -12,5 +12,3 @@ services:
     ports: !reset []
   rustfs:
     ports: !reset []
-  mobile-app-web:
-    ports: !reset []

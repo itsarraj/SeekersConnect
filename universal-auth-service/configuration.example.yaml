@@ -1,28 +1,28 @@
-# Copy to configuration.yaml and customize. Override via APP_* env vars.
-application_host: "0.0.0.0"
+application_host: "127.0.0.1"
 application_port: 8000
 
 database:
-  host: "postgres"
+  host: "127.0.0.1"
   port: 5432
-  username: "uas"
-  password: "changeme"
+  username: "uranium"
+  password: ""
   database_name: "uas"
 
 redis:
-  host: "redis"
+  host: "127.0.0.1"
   port: 6379
   password: null
   database: null
 
 jwt:
-  secret: "change-this-jwt-secret-in-production"
+  secret: "your-super-secret-jwt-key-change-this-in-production"
   access_token_expiration_hours: 24
   refresh_token_expiration_days: 30
 
 email:
-  api_key: ""
-  from_email: "noreply@example.com"
+  api_key: "re_2Caioev1_L22gbJL1vyyd7krrXmTH8tnD"
+  from_email: "noreply@resend.dev"
   from_name: "Universal Auth Service"
   base_url: "http://localhost:8000"
   frontend_base_url: "http://localhost:5173"
+
